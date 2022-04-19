@@ -28,9 +28,6 @@ app.post("/runCode", async (req, res) => {
 
   //Now we need to run the file and return  output
     const filePath = await generateFile(language,code);
-    console.log(filePath);
     const output =  await execute(filePath);
-    console.log(`Filepath: ${filePath} and outpur is ${output}`);
-
-  res.json({ language: `${language}`, code: `${code}` });
+   res.json({ output: output });
 });
