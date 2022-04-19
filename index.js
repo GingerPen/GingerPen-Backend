@@ -1,7 +1,8 @@
 const express = require("express");
-
 const app = express();
 var cors = require("cors");
+const { generateFile } = require("./generateFile");
+const {execute} = require("./execute");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -18,8 +19,15 @@ app.get("/", (req, res) => {
   res.json({ status: "sup" });
 });
 
-app.post("/runCode", (req, res) => {
-  const some = req.body;
+app.post("/runCode", async (req, res) => {
+  const { language = "java",code} = req.body;
 
-  res.json({ language: `${some.language}`, code: `${some.code}` });
+  if(code === ""){
+    return res.status(400).json({success: false, error:"Empty code body"});
+  }
+
+  //Now we need to run the file and return  output
+    const filePath = await generateFile(language,code);
+    const output =  await execute(filePath);
+   res.json({ output: output });
 });
