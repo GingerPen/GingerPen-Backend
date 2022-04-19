@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 var cors = require("cors");
 const { generateFile } = require("./generateFile");
+const {execute} = require("./execute");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -28,5 +29,8 @@ app.post("/runCode", async (req, res) => {
   //Now we need to run the file and return  output
     const filePath = await generateFile(language,code);
     console.log(filePath);
+    const output =  await execute(filePath);
+    console.log(`Filepath: ${filePath} and outpur is ${output}`);
+
   res.json({ language: `${language}`, code: `${code}` });
 });
