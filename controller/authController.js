@@ -5,7 +5,6 @@ const userModel = require("../model/userModel");
 const statusCodes = require('../utils/statusCodes');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-const e = require('express');
 
 
 module.exports.loginUser = async function loginUser(req, res) {

@@ -17,7 +17,7 @@ const execute = async (filePath) => {
     const outPath = path.join(outputPath, `${jobId}.out`);
     switch (type) {
         case "java":
-            command = `cd codes && javac ${jobId}.java && java ${jobId}`;
+            command = `cd utils && cd codes && javac ${jobId}.java && java ${jobId}`;
             break;
         case "py":
             command = `python ${jobId}.py`;
@@ -40,10 +40,9 @@ const execute = async (filePath) => {
             });
     }).then((result) => {
         return result;
+    }).catch((error) => {
+        return error.stderr;
     })
-        .catch((error) => {
-            return error.stderr;
-        })
 };
 
 module.exports = {

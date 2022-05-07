@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-
 const dirCodes = path.join(__dirname, "codes");
 
 if(!fs.existsSync(dirCodes)){
