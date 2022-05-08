@@ -10,10 +10,8 @@ if (!fs.existsSync(outputPath)) {
 
 const execute = async (filePath) => {
     command = "";
-
     jobId = path.basename(filePath).split('.')[0];
     type = path.basename(filePath).split('.')[1];
-
     const outPath = path.join(outputPath, `${jobId}.out`);
     switch (type) {
         case "java":
@@ -23,7 +21,6 @@ const execute = async (filePath) => {
             command = `python ${jobId}.py`;
             break;
     }
-
     return new Promise((resolve, reject) => {
         exec(command,
             /**

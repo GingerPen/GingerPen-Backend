@@ -27,23 +27,27 @@ module.exports.loginUser = async function loginUser(req, res) {
                     let jwt_token = jwt.sign({ payload: uid }, JWT_KEY);
                     res.cookie('login_token', jwt_token, { http_only: true });
                     res.json({
+                        success: true,
                         message: "User signed in successfully",
                         data: user
                     });
                 } else {
                     res.status(statusCodes.UNAUTHORIZED).json({
+                        success: false,
                         message: "password not matched"
                     })
                 }
             })
         } else {
             res.status(statusCodes.NOT_FOUND).json({
+                success: false,
                 message: "User not found!"
             })
         }
     } catch (err) {
         res.status(statusCodes.INTERNAL_SERVER_ERROR)
             .json({
+                success: false,
                 message: `Error during login: ${err.message}`
             })
     }
@@ -56,16 +60,19 @@ module.exports.signup = async function signup(req, res) {
         if (user) {
             user.password = undefined;
             res.json({
+                success: true,
                 message: "User Added successfully",
                 userData: user
             })
         } else {
             res.json({
+                success: false,
                 message: "Error while sign up, please try again!"
             })
         }
     } catch (err) {
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
             message: `Server error: ${err.message}`
         })
     }
@@ -90,11 +97,13 @@ module.exports.forgotPassword = async function forgotPassword(req, res) {
             sendMail(resetPasswordLink, req, res);
         } else {
             return res.status(statusCodes.NOT_FOUND).json({
+                success: false,
                 message: "Please signup"
             })
         }
     } catch (err) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
             message: `Server error: ${err.message}`
         })
     }
@@ -105,20 +114,22 @@ module.exports.resetPassword = async function resetPassword(req, res) {
         const token = req.params.token;
         let { password, confirmPass } = req.body;
         const user = await userModel.findOne({ resetToken: token });
-        console.log("found a user:  " + user);
         if (user) {
             user.resetPasswordHandler(password, confirmPass);
             await user.save();
             res.json({
+                success: true,
                 message: "Changed success"
             });
         } else {
             res.status(statusCodes.NOT_FOUND).json({
+                success: false,
                 message: "User not found "
             })
         }
     } catch (err) {
         res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
             message: `Server error: ${err.message}`
         })
     }
@@ -127,6 +138,7 @@ module.exports.resetPassword = async function resetPassword(req, res) {
 module.exports.logOut = function logOut(req, res) {
     res.cookie('login_token', '', { maxAge: 1 })
     res.json({
+        success: true,
         message: "Logout successfull"
     })
     // res.redirect('/auth/login');
@@ -145,23 +157,25 @@ function sendMail(resetPasswordLink, req, res) {
 
     var mailOptions = {
         from: 'devjunctionofficial@gmail.com',
-        to: 'gopalsays108@gmail.com',
+        to: 'harshit19csu411@ncuindia.edu',
         subject: 'Reset Ginger-Pen password',
         text: `Click here to reset password: ${resetPasswordLink}`,
         //html: '<h1>Welcome</h1><p>Reseting passowrd made easy.!</p>',
-      
+
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log(error.message)
-            res.json({
+            res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+                success: false,
                 message: "failed sending mail"
             })
         }
         else {
             console.log('Email sent');
             res.json({
+                success: true,
                 message: "Mail sent successfully" + resetPasswordLink
             })
         }
