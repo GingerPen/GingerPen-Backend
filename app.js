@@ -19,10 +19,10 @@ const authRouter = require("./routers/authRouter");
 const homeRouter = require("./routers/homeRouter");
 const codeRouter = require("./routers/codeRouter");
 
-app.use('/', homeRouter);
+
 app.use('/code', codeRouter);
 app.use('/auth', authRouter);
-
+app.use('/', homeRouter);
 
 
 mongoose.connect(db_link)
@@ -32,17 +32,3 @@ mongoose.connect(db_link)
   .catch(function (err) {
     console(`Error connecting to DB: ${err.message}`);
   });
-
-
-// app.post("/runCode", async (req, res) => {
-//   const { language = "java",code} = req.body;
-
-//   if(code === ""){
-//     return res.status(400).json({success: false, error:"Empty code body"});
-//   }
-
-//   //Now we need to run the file and return  output
-//     const filePath = await generateFile(language,code);
-//     const output =  await execute(filePath);
-//    res.json({ output: output });
-// });

@@ -91,10 +91,10 @@ module.exports.forgotPassword = async function forgotPassword(req, res) {
         });
         if (user) {
             const resetToken = await user.createResetToken();
-            let resetPasswordLink = `${req.protocol}://${req.get('host')}/resetpassword/${resetToken}`;
+            let resetPasswordLink = `${req.protocol}://${req.get('host')}/auth/resetpassword/${resetToken}`;
             user.confirmPass = user.password;
             await user.save();
-            sendMail(resetPasswordLink, req, res);
+            sendMail(resetPasswordLink, user.email, req, res);
         } else {
             return res.status(statusCodes.NOT_FOUND).json({
                 success: false,
@@ -135,7 +135,7 @@ module.exports.resetPassword = async function resetPassword(req, res) {
     }
 }
 
-module.exports.logOut = function logOut(req, res) {
+module.exports.logOut =  function logOut(req, res) {
     res.cookie('login_token', '', { maxAge: 1 })
     res.json({
         success: true,
@@ -144,7 +144,36 @@ module.exports.logOut = function logOut(req, res) {
     // res.redirect('/auth/login');
 }
 
-function sendMail(resetPasswordLink, req, res) {
+module.exports.isLogedIn = async function isLogedIn(req, res, next){
+    try{
+        if(req.cookies.login_token){
+            let token = req.cookies.login_token;
+            let payload = jwt.verify(token, JWT_KEY);
+            if(payload){
+                const user = await userModel.findById(payload.payload);
+                res.user = user;
+                next();
+            }else{
+                res.status(statusCodes.UNAUTHORIZED).json({
+                    success: false,
+                    message: "Token verification failed. Please login in"
+                });
+            }
+        }else{
+            res.status(statusCodes.UNAUTHORIZED).json({
+                success: false,
+                message: "User not signed in"
+            });
+        }
+    }catch(err){
+        res.status(statusCodes.UNAUTHORIZED).json({
+            success: false,
+            message: `Please login in. ${err.message}`,
+        });
+    }
+}
+
+function sendMail(resetPasswordLink, userEmail, req, res) {
 
     isSent = false;
     var transporter = nodemailer.createTransport({
@@ -157,7 +186,7 @@ function sendMail(resetPasswordLink, req, res) {
 
     var mailOptions = {
         from: 'devjunctionofficial@gmail.com',
-        to: 'harshit19csu411@ncuindia.edu',
+        to: userEmail,
         subject: 'Reset Ginger-Pen password',
         text: `Click here to reset password: ${resetPasswordLink}`,
         //html: '<h1>Welcome</h1><p>Reseting passowrd made easy.!</p>',

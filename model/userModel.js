@@ -58,14 +58,14 @@ userSchema.pre('save', async function () {
 userSchema.methods.createResetToken = async function () {
     return await new Promise((resolve, reject) => {
         crypto.randomBytes(48, (err, buffer) => {
-          if (err) {
-            reject(-1);
-          }
-          let token =  buffer.toString('hex');
-          this.resetToken = token;
-          resolve(token);
+            if (err) {
+                reject(-1);
+            }
+            let token = buffer.toString('hex');
+            this.resetToken = token;
+            resolve(token);
         });
-      });
+    });
 }
 
 userSchema.methods.resetPasswordHandler = function (password, confirmPass) {

@@ -1,7 +1,10 @@
 module.exports.testing = function testing(req,res){
-    console.log('got');
+    res.user.password = undefined;
+    res.user.__v = undefined;
+    
     res.json({
-        success: false,
-        message: "asdasdasd"
-    })
+        success: true,
+        message: "Home user is signed in",
+        data: res.user
+    });
 }
