@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { userNameValidator, emailValidator } = require("../utils/validators");
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+
 
 const userSchema = mongoose.Schema({
     name: {
@@ -36,6 +38,11 @@ const userSchema = mongoose.Schema({
             return this.password == this.confirmPass;
         }
     },
+    resetToken: String,
+    profileImage: {
+        type: String,
+        default: 'GingerPen-Backend\\public\\images\\default_dp.png'
+    }
 });
 
 userSchema.pre('save', function () {
@@ -47,6 +54,26 @@ userSchema.pre('save', async function () {
     let hashString = await bcrypt.hash(this.password, salt);
     this.password = hashString;
 })
+
+userSchema.methods.createResetToken = async function () {
+    return await new Promise((resolve, reject) => {
+        crypto.randomBytes(48, (err, buffer) => {
+            if (err) {
+                reject(-1);
+            }
+            let token = buffer.toString('hex');
+            this.resetToken = token;
+            resolve(token);
+        });
+    });
+}
+
+userSchema.methods.resetPasswordHandler = function (password, confirmPass) {
+    this.password = password;
+    this.confirmPass = confirmPass;
+    this.resetToken = undefined;
+
+}
 
 const userModel = mongoose.model('userModel', userSchema);
 

@@ -10,20 +10,17 @@ if (!fs.existsSync(outputPath)) {
 
 const execute = async (filePath) => {
     command = "";
-
     jobId = path.basename(filePath).split('.')[0];
     type = path.basename(filePath).split('.')[1];
-
     const outPath = path.join(outputPath, `${jobId}.out`);
     switch (type) {
         case "java":
-            command = `cd codes && javac ${jobId}.java && java ${jobId}`;
+            command = `cd utils && cd codes && javac ${jobId}.java && java ${jobId}`;
             break;
         case "py":
             command = `python ${jobId}.py`;
             break;
     }
-
     return new Promise((resolve, reject) => {
         exec(command,
             /**
@@ -40,10 +37,9 @@ const execute = async (filePath) => {
             });
     }).then((result) => {
         return result;
+    }).catch((error) => {
+        return error.stderr;
     })
-        .catch((error) => {
-            return error.stderr;
-        })
 };
 
 module.exports = {
