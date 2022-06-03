@@ -35,7 +35,7 @@ module.exports.loginUser = async function loginUser(req, res) {
                     res.status(statusCodes.UNAUTHORIZED).json({
                         success: false,
                         message: "password not matched"
-                    })
+                    });
                 }
             })
         } else {
@@ -152,18 +152,14 @@ module.exports.isLogedIn = async function isLogedIn(req, res, next){
             if(payload){
                 const user = await userModel.findById(payload.payload);
                 res.user = user;
-                next();
+                res.isAuthorised = true;
             }else{
-                res.status(statusCodes.UNAUTHORIZED).json({
-                    success: false,
-                    message: "Token verification failed. Please login in"
-                });
+                res.isAuthorised = false;
             }
+            next();
         }else{
-            res.status(statusCodes.UNAUTHORIZED).json({
-                success: false,
-                message: "User not signed in"
-            });
+            res.isAuthorised = false;
+            next();
         }
     }catch(err){
         res.status(statusCodes.UNAUTHORIZED).json({
