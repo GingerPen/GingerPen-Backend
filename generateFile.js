@@ -9,8 +9,8 @@ if(!fs.existsSync(dirCodes)){
 }
 
 const generateFile = async (format, code) => {
-    const jobId = "GingerPen"
-    const fileName  = `${jobId}.${format}`
+    const jobId = "GingerPen";
+    const fileName  = `${jobId}.${format}`;
     const filepath = path.join(dirCodes,fileName);
     await fs.writeFileSync(filepath,code);
     return filepath;
