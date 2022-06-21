@@ -40,7 +40,11 @@ module.exports.saveCode = async function saveCode(req, res) {
     if (isAuthorised) {
         let data = req.body;
         console.log(data.userId);
-        let code = await userCodesModel.findOneAndUpdate({ "userId": data.userId }, { codes: data.codes }, { upsert: true });
+        let code = await userCodesModel.updateOne({ "userId": data.userId }, {
+            $push: {
+                codes: data.codes
+            }
+        }, { upsert: true });
         if (code) {
             res.json({
                 success: true,
@@ -149,7 +153,7 @@ module.exports.deleteCode = async function deleteCode(req, res) {
                     message: "Deleted Successfully"
                 });
             } else {
-                console.log(isDeleted );
+                console.log(isDeleted);
                 res.status(statusCodes.NOT_FOUND).json({
                     success: false,
                     message: "Deleted failed"
