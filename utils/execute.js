@@ -12,13 +12,13 @@ const execute = async (filePath) => {
     command = "";
     jobId = path.basename(filePath).split('.')[0];
     type = path.basename(filePath).split('.')[1];
-    const outPath = path.join(outputPath, `${jobId}.out`);
+    //const outPath = path.join(outputPath, `${jobId}.out`);
     switch (type) {
         case "java":
             command = `cd utils && cd codes && javac ${jobId}.java && java ${jobId}`;
             break;
         case "py":
-            command = `python ${jobId}.py`;
+            command = `cd utils && cd codes && python ${jobId}.py`;
             break;
     }
     return new Promise((resolve, reject) => {
