@@ -2,15 +2,24 @@ const express = require('express');
 const userCodesModel = require('../model/userCodeModel');
 const app = express();
 const { execute } = require('../utils/execute');
-const { generateFile } = require('../utils/generateFile');
+const { generateFileJava,generateFilePy,deleteFileJava,deleteFilePy } = require('../utils/generateFile');
 const statusCodes = require('../utils/statusCodes');
 
 
 module.exports.runCode = async function runCode(req, res) {
     try {
         const { language, code } = req.body;
-        const filePath = await generateFile(language, code);
-        const output = await execute(filePath);
+        var output = null;
+        if(language=='java'){
+            const filePath = await generateFileJava(language, code);
+            output = await execute(filePath);
+            deleteFileJava(filePath);
+        }
+        if(language=='py'){
+            const filePath = await generateFilePy(language, code);
+            output = await execute(filePath);
+            deleteFilePy(filePath);
+        }
         res.json({
             success: true,
             message: output
