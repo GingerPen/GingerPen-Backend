@@ -2,7 +2,7 @@ const express = require('express');
 const { isLogedIn } = require('../controller/authController');
 const codeRouter = express.Router();
 const app = express();
-const { runCode, checkCodeQuality, getCodeList, saveCode, updateCode, deleteCode } = require('../controller/codeController');
+const { runCode, checkCodeQuality, getCodeList, saveCode, updateCode, deleteCode, webSocketTest } = require('../controller/codeController');
 
 codeRouter
     .route('/runcode')
@@ -22,6 +22,9 @@ codeRouter
 
 codeRouter
     .route('/getcodelist/:email')
-    .get(isLogedIn, getCodeList);
+    .post(isLogedIn, getCodeList);
+
+
+
 
 module.exports = codeRouter;

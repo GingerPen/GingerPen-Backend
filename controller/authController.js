@@ -10,6 +10,7 @@ const nodemailer = require('nodemailer');
 module.exports.loginUser = async function loginUser(req, res) {
     try {
         let { data, password } = req.body;
+        console.log("login")
         //let user = await userModel.findOne({ "username": data });
         let user = await userModel.findOne({
             $or: [{
@@ -135,7 +136,7 @@ module.exports.resetPassword = async function resetPassword(req, res) {
     }
 }
 
-module.exports.logOut =  function logOut(req, res) {
+module.exports.logOut = function logOut(req, res) {
     res.cookie('login_token', '', { maxAge: 1 })
     res.json({
         success: true,
@@ -144,24 +145,24 @@ module.exports.logOut =  function logOut(req, res) {
     // res.redirect('/auth/login');
 }
 
-module.exports.isLogedIn = async function isLogedIn(req, res, next){
-    try{
-        if(req.cookies.login_token){
+module.exports.isLogedIn = async function isLogedIn(req, res, next) {
+    try {
+        if (req.cookies.login_token) {
             let token = req.cookies.login_token;
             let payload = jwt.verify(token, JWT_KEY);
-            if(payload){
+            if (payload) {
                 const user = await userModel.findById(payload.payload);
                 res.user = user;
                 res.isAuthorised = true;
-            }else{
+            } else {
                 res.isAuthorised = false;
             }
             next();
-        }else{
+        } else {
             res.isAuthorised = false;
             next();
         }
-    }catch(err){
+    } catch (err) {
         res.status(statusCodes.UNAUTHORIZED).json({
             success: false,
             message: `Please login in. ${err.message}`,

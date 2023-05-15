@@ -2,20 +2,21 @@ const express = require('express');
 const userCodesModel = require('../model/userCodeModel');
 const app = express();
 const { execute } = require('../utils/execute');
-const { generateFileJava,generateFilePy,deleteFileJava,deleteFilePy } = require('../utils/generateFile');
+const { generateFileJava, generateFilePy, deleteFileJava, deleteFilePy } = require('../utils/generateFile');
 const statusCodes = require('../utils/statusCodes');
+
 
 
 module.exports.runCode = async function runCode(req, res) {
     try {
         const { language, code } = req.body;
         var output = null;
-        if(language=='java'){
+        if (language == 'java') {
             const filePath = await generateFileJava(language, code);
             output = await execute(filePath);
             deleteFileJava(filePath);
         }
-        if(language=='py'){
+        if (language == 'py') {
             const filePath = await generateFilePy(language, code);
             output = await execute(filePath);
             deleteFilePy(filePath);
@@ -45,10 +46,12 @@ module.exports.checkCodeQuality = function checkCodeQuality(req, res, next) {
 }
 
 module.exports.saveCode = async function saveCode(req, res) {
-    let isAuthorised = res.isAuthorised;
+    const auth = req.body.body;
+    console.log(auth);
+    let isAuthorised = auth.isAuthorised;
     if (isAuthorised) {
-        let data = req.body;
-        console.log(data.userId);
+        let data = req.body.body;
+        console.log(data.codes);
         let code = await userCodesModel.updateOne({ "userId": data.userId }, {
             $push: {
                 codes: data.codes
@@ -75,7 +78,8 @@ module.exports.saveCode = async function saveCode(req, res) {
 
 
 module.exports.getCodeList = async function getCodeList(req, res) {
-    let isAuthorised = res.isAuthorised;
+    const auth = JSON.parse(req.body.body);
+    let isAuthorised = auth.isAuthorised;
     if (isAuthorised) {
         let emailId = req.params.email;
         console.log(emailId);
@@ -137,6 +141,8 @@ module.exports.updateCode = async function updateCode(req, res) {
     }
 }
 
+
+
 module.exports.deleteCode = async function deleteCode(req, res) {
     let isAuthorised = res.isAuthorised;
     if (isAuthorised) {
@@ -181,3 +187,5 @@ module.exports.deleteCode = async function deleteCode(req, res) {
         });
     }
 }
+
+
