@@ -14,7 +14,7 @@ let server = app.listen(port, () => {
 
 const io = require('socket.io')(server, {
   cors: {
-    origin: '*',
+    "Access-Control-Allow-Origin": '*',
   }
 });
 app.use(cors());
