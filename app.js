@@ -3,7 +3,7 @@ const app = express();
 var cors = require("cors");
 const cookiesParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const port = 8080;
+const port = process.env.PORT || 8080;
 const db_link = "mongodb+srv://gopalsays:GopalHarshitGrishav%40147@cluster0.pi3dc.mongodb.net/GingerPen?retryWrites=true&w=majority"
 
 
